@@ -4,12 +4,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
-public class MockBookService {
+public class MockBookService implements IBookService {
 
     private final List<Book> list;
-    private static Long nextId = 4L;
+    private static Long nextId;
 
 
     public MockBookService() {
@@ -25,39 +26,55 @@ public class MockBookService {
                 "Steven King", "Helion", "Thriller"));
         this.list.add(new Book(5L, "8975421321897", "Sherlock Holmes",
                 "Agatha Cristie", "Helion", "Criminal"));
+
+        Integer size = list.size() + 1;
+        nextId = size.longValue();
     }
 
     //    Pobieranie listy wszystkich książek
-    protected List<Book> getAllBooks() {
+    @Override
+    public List<Book> getAllBooks() {
         return list;
     }
 
     //    Pobieranie obiektu po wskazanym identyfikatorze.
-    protected Book getBookById(Long id) {
+    @Override
+    public Optional<Book> getBookById(Long id) {
         return list.stream()
                 .filter(e -> e.getId().equals(id))
-                .findAny()
-                .orElse(null);
+                .findFirst();
     }
 
     //    Edycje obiektu.
-    protected void editBook(Book book) {
-        int bookToEditIndex = list.indexOf(book);
-        list.set(bookToEditIndex, book);
+    @Override
+
+    public void editBook(Book book) {
+        int bookToEditIndex = list.indexOf(getBookById(book.getId()));
+        if(list.get(bookToEditIndex) != null){
+            list.set(bookToEditIndex, book);
+        }
     }
 
     //    Usuwanie obiektu.
-    protected void deleteBook(Long id) {
-        Book bookToDelete = getBookById(id);
-        list.remove(bookToDelete);
+    @Override
+
+    public void deleteBook(Long id) {
+        Optional<Book> bookToDelete = getBookById(id);
+        if (bookToDelete.isPresent()) {
+            list.remove(bookToDelete.get());
+        }
     }
 
     //    dodawanie obiektu.
-    protected void addBook(Book book) {
+    @Override
+
+    public void addBook(Book book) {
         book.setId(nextId);
         if (list.add(book)) {
             nextId++;
         }
 
     }
+
+
 }

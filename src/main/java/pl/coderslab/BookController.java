@@ -2,7 +2,9 @@ package pl.coderslab;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -14,10 +16,10 @@ public class BookController {
     private static final Logger logger
             = LoggerFactory.getLogger(BookController.class);
 
-    private final MockBookService mockBookService;
+    private final IBookService bookService;
 
-    public BookController(MockBookService mockBookService) {
-        this.mockBookService = mockBookService;
+    public BookController(MockBookService bookService) {
+        this.bookService = bookService;
     }
 
     @RequestMapping("/helloBook")
@@ -28,17 +30,34 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAllBooks(){
+    public List<Book> getAllBooks() {
         logger.info("getAllBooks");
-        return mockBookService.getAllBooks();
+        return bookService.getAllBooks();
+    }
+
+    @GetMapping("/{id}")
+    public Book getBook(@PathVariable Long id) {
+        return this.bookService.getBookById(id).orElseThrow(() -> {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
+        });
     }
 
     @PostMapping
-    public void addBook(@RequestBody Book book){
-        mockBookService.addBook(book);
+    public void addBook(@RequestBody Book book) {
+        bookService.addBook(book);
     }
 
+    @PutMapping
+    public void editBook(@RequestBody Book book) {
+        bookService.editBook(book);
+    }
 
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+    }
 
 
 }
