@@ -7,7 +7,7 @@ public interface IBookService {
 
     List<Book> getAllBooks();
     Optional<Book> getBookById(Long id);
-    void editBook(Book book);
+    void editBook(Book newBookData, Long id);
     void deleteBook(Long id);
     void addBook(Book book);
 }

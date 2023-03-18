@@ -47,17 +47,16 @@ public class MockBookService implements IBookService {
 
     //    Edycje obiektu.
     @Override
+    public void editBook(Book newBookData, Long id) {
+        Optional<Book> bookToEdit = getBookById(id);
 
-    public void editBook(Book book) {
-        int bookToEditIndex = list.indexOf(getBookById(book.getId()));
-        if(list.get(bookToEditIndex) != null){
-            list.set(bookToEditIndex, book);
-        }
+        int index = list.indexOf(bookToEdit.get());
+        list.set(index, newBookData);
+
     }
 
     //    Usuwanie obiektu.
     @Override
-
     public void deleteBook(Long id) {
         Optional<Book> bookToDelete = getBookById(id);
         if (bookToDelete.isPresent()) {
@@ -67,13 +66,11 @@ public class MockBookService implements IBookService {
 
     //    dodawanie obiektu.
     @Override
-
     public void addBook(Book book) {
         book.setId(nextId);
         if (list.add(book)) {
             nextId++;
         }
-
     }
 
 

@@ -18,7 +18,7 @@ public class BookController {
 
     private final IBookService bookService;
 
-    public BookController(MockBookService bookService) {
+    public BookController(IBookService bookService) {
         this.bookService = bookService;
     }
 
@@ -49,9 +49,14 @@ public class BookController {
         bookService.addBook(book);
     }
 
-    @PutMapping
-    public void editBook(@RequestBody Book book) {
-        bookService.editBook(book);
+    @PutMapping("/{id}")
+    public void editBook(@RequestBody Book book, @PathVariable Long id) {
+        this.bookService.getBookById(id).orElseThrow(() -> {
+            bookService.editBook(book, id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No book with given ID"
+            );
+        });
     }
 
     @DeleteMapping("/{id}")
